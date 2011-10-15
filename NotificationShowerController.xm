@@ -2,15 +2,17 @@
 #import <UIKit/UIKit.h>
 #import "BBWeeAppController-Protocol.h"
 
-#define VIEW_HEIGHT 70.0f
+#define VIEW_HEIGHT 40.0f
+
+@interface UIDevice (theiostream)
+- (BOOL)isWildcat;
+@end
 
 @interface NotificationShowerController : NSObject <BBWeeAppController, UITextFieldDelegate>
 {
 	UIView *_view;
-	NSDictionary *dict;
-	UILabel *lbl;
 	UITextField *textField;
-	NSString *trigger;
+	NSMutableDictionary *dict;
 }
 
 @end
@@ -19,7 +21,6 @@
 
 - (void)dealloc {
 	[_view release];
-	[lbl release];
 	[textField release];
 	[super dealloc];
 }
@@ -37,66 +38,40 @@
 {
 	if (!_view)
 	{
-		dict = [[NSDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.notificationshower.plist"];
 		_view = [[UIView alloc] initWithFrame:CGRectMake(2.0f, 0.0f, 316.0f, VIEW_HEIGHT)];
-
+		
+		dict = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.notificationshower.plist"];
 		UIImage *bgImg = [[UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:71];
         UIImageView *bg = [[UIImageView alloc] initWithImage:bgImg];
-        bg.frame = CGRectMake(0.0f, 0.0f, 316.0f, VIEW_HEIGHT);
+        bg.frame = [[UIDevice currentDevice] isWildcat] ? CGRectMake(0.0f, 0.0f, 436.0f, VIEW_HEIGHT) : CGRectMake(0.0f, 0.0f, 316.0f, VIEW_HEIGHT);
         [_view addSubview:bg];
         [bg release];
-
-	textField = [[UITextField alloc] initWithFrame:CGRectMake(2.0f, 0.0f, 316.0f, VIEW_HEIGHT)];
-	textField.backgroundColor = [UIColor clearColor];
-	textField.textColor = [UIColor whiteColor];
-	textField.placeholder = @"Type your reminder here.";
-	textField.font = [UIFont fontWithName:@"Verdana" size:24.0];
-	textField.textAlignment = UITextAlignmentCenter;
-	textField.delegate = self;
-	[textField setHidden:TRUE];
-	
-
-	lbl = [[UILabel alloc] initWithFrame:CGRectMake(2.0f, 0.0f, 316.0f, VIEW_HEIGHT)];
-	lbl.backgroundColor = [UIColor clearColor];
-	lbl.textColor = [UIColor whiteColor];
-	NSString *fieldtext = textField.text;
-	trigger = @"asd";
-	if ([trigger isEqualToString:@"asd"]) {
-	lbl.text = @"Overwrite this placeholder.. Click me!";
-	}
-	else {
-	lbl.text = fieldtext;
-	}
-	lbl.textAlignment = UITextAlignmentCenter;
-	lbl.font = [UIFont fontWithName:@"Verdana" size:24.0];
-	lbl.userInteractionEnabled = YES;
-	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLabelWithGesture:)];
-	[lbl addGestureRecognizer:tapGesture];
-	[_view addSubview:lbl];
-	[_view addSubview:textField];
-	[tapGesture release];
-	[lbl release];
-	[textField release];
-	
+		
+		CGRect frame = [[UIDevice currentDevice] isWildcat] ? CGRectMake(26.0f, 0.0f, 436.0f, VIEW_HEIGHT) : CGRectMake(2.0f, 0.0f, 316.0f, VIEW_HEIGHT);
+		textField = [[UITextField alloc] initWithFrame:frame];
+		textField.backgroundColor = [UIColor clearColor];
+		textField.textColor = [UIColor whiteColor];
+		if (![dict objectForKey:@"Text"])
+			textField.text = @"Type something.";
+		else
+			textField.text = [dict objectForKey:@"Text"];
+		textField.font = [UIFont fontWithName:@"Verdana" size:18.0];
+		textField.textAlignment = UITextAlignmentCenter;
+		textField.delegate = self;
+		[_view addSubview:textField];
 	}
 
 	return _view;
 }
 
-- (void)didTapLabelWithGesture:(UITapGestureRecognizer *)tapGesture {
-	[lbl setHidden:TRUE];
-	[textField setHidden:FALSE];
+- (BOOL)textFieldShouldReturn:(UITextField *)anotherTextField {
 	
-}
+	[anotherTextField resignFirstResponder];
+	NSLog(@"====== DEBUG PRINT: %@", [anotherTextField text]);
+	[dict setObject:[anotherTextField text] forKey:@"Text"];
+	[dict writeToFile:@"/var/mobile/Library/Preferences/am.theiostre.notificationshower.plist" atomically:YES];
 
-- (BOOL)textFieldShouldReturn:(UITextField *) anotherTextField {
-	
-	[textField resignFirstResponder];
-	[textField setHidden:TRUE];
-	[lbl setHidden:FALSE];
-	trigger = @"yay";
-
-	return YES; //I hope it's YES
+	return YES; //I (no longer) hope it's YES
 }
 
 - (float)viewHeight
