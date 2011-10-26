@@ -27,10 +27,7 @@
 
 - (id)init
 {
-	if ((self = [super init]))
-	{
-		
-	}
+	if ((self = [super init])) {}
 	return self;
 }
 
@@ -41,13 +38,13 @@
 		_view = [[UIView alloc] initWithFrame:CGRectMake(2.0f, 0.0f, 316.0f, VIEW_HEIGHT)];
 		
 		dict = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.notificationshower.plist"];
-		UIImage *bgImg = [[UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/StocksWeeApp.bundle/WeeAppBackground.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:71];
+		UIImage *bgImg = [[UIImage imageWithContentsOfFile:@"/System/Library/WeeAppPlugins/NotificationShower.bundle/WeeAppBackground.png"] stretchableImageWithLeftCapWidth:5 topCapHeight:71];
         UIImageView *bg = [[UIImageView alloc] initWithImage:bgImg];
-        bg.frame = [[UIDevice currentDevice] isWildcat] ? CGRectMake(0.0f, 0.0f, 436.0f, VIEW_HEIGHT) : CGRectMake(0.0f, 0.0f, 316.0f, VIEW_HEIGHT);
+        bg.frame = [[UIDevice currentDevice] isWildcat] ? CGRectMake(15.0f, 0.0f, 440.0f, VIEW_HEIGHT) : CGRectMake(4.0f, 0.0f, 316.0f, VIEW_HEIGHT);
         [_view addSubview:bg];
         [bg release];
 		
-		CGRect frame = [[UIDevice currentDevice] isWildcat] ? CGRectMake(26.0f, 0.0f, 436.0f, VIEW_HEIGHT) : CGRectMake(2.0f, 0.0f, 316.0f, VIEW_HEIGHT);
+		CGRect frame = [[UIDevice currentDevice] isWildcat] ? CGRectMake(20.0f, 0.0f, 430.0f, VIEW_HEIGHT) : CGRectMake(4.0f, 0.0f, 316.0f, VIEW_HEIGHT);
 		textField = [[UITextField alloc] initWithFrame:frame];
 		textField.backgroundColor = [UIColor clearColor];
 		textField.textColor = [UIColor whiteColor];
@@ -64,14 +61,14 @@
 	return _view;
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)anotherTextField {
-	
-	[anotherTextField resignFirstResponder];
-	NSLog(@"====== DEBUG PRINT: %@", [anotherTextField text]);
+- (void)textFieldDidEndEditing:(UITextField *)anotherTextField {
 	[dict setObject:[anotherTextField text] forKey:@"Text"];
 	[dict writeToFile:@"/var/mobile/Library/Preferences/am.theiostre.notificationshower.plist" atomically:YES];
+}
 
-	return YES; //I (no longer) hope it's YES
+- (BOOL)textFieldShouldReturn:(UITextField *)aTextField {
+	[aTextField resignFirstResponder];
+	return YES;
 }
 
 - (float)viewHeight
