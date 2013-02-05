@@ -2,7 +2,7 @@
 #import <UIKit/UIKit.h>
 #import "BBWeeAppController-Protocol.h"
 
-#define VIEW_HEIGHT 40.0f
+#define VIEW_HEIGHT 24.0f
 
 @interface UIDevice (theiostream)
 - (BOOL)isWildcat;

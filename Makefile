@@ -3,7 +3,7 @@ THEOS_DEVICE_IP=192.168.1.105
 include theos/makefiles/common.mk
 
 TWEAK_NAME = NotificationShower
-NotificationShower_FILES = NotificationShowerController.xm
+NotificationShower_FILES = NotificationShowerController.m
 NotificationShower_INSTALL_PATH = /System/Library/WeeAppPlugins/NotificationShower.bundle/
 NotificationShower_FRAMEWORKS = UIKit CoreGraphics
 
